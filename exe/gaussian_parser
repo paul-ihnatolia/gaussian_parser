@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+
+require 'gaussian_parser'
+params  = ARGV.reject {|a| a =~ /^-/}
+options = ARGV.select {|a| a =~ /^-/}
+
+GaussianParser.process({params: params, options: options})
