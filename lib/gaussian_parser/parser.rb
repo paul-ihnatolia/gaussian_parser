@@ -41,11 +41,11 @@ module GaussianParser
             }
             FileItemProcessor.new(params).proccess
           else
-            print_as_error "'#{file_name}' doesn't exist or it is not a valid file"
+            print_as_error("'#{file_name}' doesn't exist or it is not a valid file")
           end      
         end
       else
-        print_as_error "Unspecified input data"
+        print_as_error("Unspecified input data")
       end
     end
   end
