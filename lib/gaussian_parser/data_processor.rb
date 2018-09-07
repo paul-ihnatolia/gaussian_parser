@@ -206,7 +206,6 @@ module GaussianParser
             end
             index += 1
           end
-          p harmonic_frequencies_data
           break
         end
 
