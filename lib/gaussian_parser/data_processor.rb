@@ -1,4 +1,5 @@
 require "gaussian_parser/cli"
+require "gaussian_parser/processors/results_processor"
 
 module GaussianParser
   class DataProcessor
@@ -20,7 +21,8 @@ module GaussianParser
     end
 
     def parse
-      results = []
+      processors = {}
+
       atom_count = {}
       molecular_orbitals = []
       harmonic_frequencies = []
@@ -36,12 +38,12 @@ module GaussianParser
           print_as_success("Stationary point found")
           was_stationary_point = true
           index += 7
-          while @file_lines[index] =~ /^\s*!/ 
-            temp_line = @file_lines[index]
-            temp_line.gsub!(/\s*!\s*/,'')
-            results.push temp_line.split(/\s+/)[0..2]
+          results = []
+          while @file_lines[index] =~ /^\s*!/
+            results.push(@file_lines[index])
             index += 1
           end
+          processors[:results_processor] = Processors::ResultsProcessor.new(results)
         end
 
         if line =~ /Distance matrix/ && was_stationary_point
@@ -215,7 +217,7 @@ module GaussianParser
 
         index += 1
       end 
-      return [results, atom_count, molecular_orbitals, harmonic_frequencies]
+      return [processors[:results_processor].process, atom_count, molecular_orbitals, harmonic_frequencies]
     end
 
     def hartri_to_ev hartri
