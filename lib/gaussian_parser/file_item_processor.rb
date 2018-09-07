@@ -1,7 +1,10 @@
 require "gaussian_parser/data_processor"
+require "gaussian_parser/cli"
 
 module GaussianParser
   class FileItemProcessor
+    include Cli
+
     HEADERS_FOR_FILES = {
       'distances.dat'             =>  %w(No Distance Value Distances),
       'angles.dat'                =>  %w(No Angle Value Angles),
@@ -17,10 +20,10 @@ module GaussianParser
     end
     
     def proccess
-      puts "Checking for normal termination"
+      print_as_usual("Checking for normal termination")
       if @parser.has_normal_termination?
-        puts "Normal termination found"
-        puts "Checking for stationary point..."
+        print_as_success("Normal termination found")
+        print_as_usual("Checking for stationary point...")
         @stationary_point, @atom_count, 
         @molecular_orbitals, @harmonic_frequencies = @parser.parse
         if !@stationary_point.empty?    
@@ -58,7 +61,7 @@ module GaussianParser
                                 "#{type.to_s}.dat", line_format)
           end
         else
-          puts "Stationary point was not found in #{@file_name}"
+          print_as_error("Stationary point was not found in #{@file_name}")
         end
 
         if !@molecular_orbitals.empty?
@@ -66,7 +69,7 @@ module GaussianParser
           process_output_file(@molecular_orbitals, @output_path,
                               "molecular_orbitals.dat", line_format)
         else
-          puts "\"Molecular Orbital Coefficients\" line wasn't found!"
+          print_as_error("'Molecular Orbital Coefficients' line wasn't found!")
         end
 
         if !@harmonic_frequencies.empty?
@@ -74,10 +77,10 @@ module GaussianParser
           process_output_file(@harmonic_frequencies, @output_path,
                               "harmonic_frequencies.dat", line_format)
         else
-          puts "Error during harmonic frequencies analyze!"
+          print_as_error("Error during harmonic frequencies analyze!")
         end
       else
-        puts "Normal termination was not found in #{@file_name}"    
+        print_as_error("Normal termination was not found in #{@file_name}")
       end 
     end
 

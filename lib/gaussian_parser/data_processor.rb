@@ -1,6 +1,10 @@
+require "gaussian_parser/cli"
+
 module GaussianParser
   class DataProcessor
-    def initialize file
+    include Cli
+
+    def initialize(file)
       @file_lines = file.readlines
     end
 
@@ -29,7 +33,7 @@ module GaussianParser
       while index < @file_lines.length
         line = @file_lines[index]
         if line =~ /Stationary point found/ && !was_stationary_point
-          puts "Stationary point found"
+          print_as_success("Stationary point found")
           was_stationary_point = true
           index += 7
           while @file_lines[index] =~ /^\s*!/ 
@@ -42,7 +46,7 @@ module GaussianParser
 
         if line =~ /Distance matrix/ && was_stationary_point
           unless was_distance_matrix
-            puts "Distance matrix processing"
+            print_as_usual("Distance matrix processing")
             was_distance_matrix = true
             index += 2
             while @file_lines[index] =~ /^\s*\d+\s*[a-zA-Z]+/
@@ -56,7 +60,7 @@ module GaussianParser
         
         if line =~ /Molecular Orbital Coefficients/ && was_distance_matrix
           unless was_mo_coefficients
-            puts "Molecular orbital processing"
+            print_as_usual("Molecular orbital processing")
             was_mo_coefficients = true
             mo_position = index + 1
             current_line = @file_lines[mo_position].split(/\s+/) 
@@ -105,7 +109,7 @@ module GaussianParser
         end
         
         if line =~ /Harmonic frequencies/
-          puts "Harmonic frequencies processing"
+          print_as_usual("Harmonic frequencies processing")
           index += 4
           current_line = @file_lines[index].split(/\s+/)
           current_line.delete ""

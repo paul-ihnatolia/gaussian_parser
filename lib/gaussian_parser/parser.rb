@@ -31,7 +31,7 @@ module GaussianParser
         output_base_path = get_file_path_from_current_dir(create_folder_if_not_exist("output"))
         
         @params.each do |file_name|
-          puts "Try to process #{file_name}"
+          print_as_usual("Try to process #{file_name}")
           if File.exist?(file_name)
             base_file_name = File.basename(File.basename(file_name), ".out.txt")
             file_output_folder = create_folder_if_not_exist(File.join(output_base_path, base_file_name))

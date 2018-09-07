@@ -10,7 +10,11 @@ module GaussianParser
     end
 
     def print_as_success(message)
-      puts "#{message}".colorize(SUCCESS_COLOR)
+      puts "Success: #{message}".colorize(SUCCESS_COLOR)
+    end
+
+    def print_as_usual(message)
+      puts "#{message}"
     end
   end
 end
