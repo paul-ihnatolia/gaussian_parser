@@ -22,7 +22,7 @@ Gem::Specification.new do |spec|
     - Molecular Orbital Coefficients
     - Harmonic frequencies
   DESCRIPTION
-  spec.homepage      = "https://github.com/paul-ihnatolia/Gaussian-Output-File-Parser"
+  spec.homepage      = "https://github.com/paul-ihnatolia/gaussian_parser"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
   # to allow pushing to a single host or delete this section to allow pushing to any host.
