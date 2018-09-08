@@ -51,7 +51,7 @@ module GaussianParser
           # Change element format
           stp_results.each_value do |results|
             results.each do |result|
-              change_element_format result
+              change_element_format(result)
             end
           end
 
@@ -84,11 +84,17 @@ module GaussianParser
       end 
     end
 
-    def change_element_format line
+    def change_element_format(line)
       element = line[1]
-      count = element.match(/[a-zA-Z]\((\d+),?(\d+),?(\d+)?,?(\d+)?\)/).captures
-      count.delete(nil)
-      right_format = count.map! {|el| @atom_count[el] + el   }
+      # element
+      #
+      # L(13,15,18,30,-1)
+
+      # TODO: make sure regexp is correct
+      count = element.scan(/-?[0-9]+/)
+      right_format = count.map! do |el|
+        @atom_count[el].nil? ? "?(#{el})" : (@atom_count[el] + el)
+      end
       line[1] = right_format.join("-")
       line
     end
