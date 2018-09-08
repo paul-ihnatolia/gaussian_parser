@@ -10,7 +10,7 @@ module GaussianParser
       'angles.dat'                =>  %w(No Angle Value Angles),
       'dihedrals.dat'             =>  %w(No Dihedral Value Dihedrals),
       'molecular_orbitals.dat'    =>  %w(No Symmetry Value_Hartree Value_eV Occupancy Homo/Lumo),
-      'harmonic_frequencies.dat'  =>  ['No', 'Symmetry', 'Frequency', 'Red. mass', 'Frc const.', 'IR Intensity', 'Raman Activity', 'Depolar (P)', 'Depolar (U)']
+      'harmonic_frequencies.dat'  =>  ['No', 'Symmetry', 'Frequency', 'Red._mass', 'Frc_const.', 'IR_Intensity', 'Raman_Activity', 'Depolar_(P)', 'Depolar_(U)']
     }
 
     def initialize(params)
