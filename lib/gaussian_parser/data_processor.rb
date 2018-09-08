@@ -1,5 +1,6 @@
 require "gaussian_parser/cli"
 require "gaussian_parser/processors/results_processor"
+require "gaussian_parser/processors/atom_processor"
 
 module GaussianParser
   class DataProcessor
@@ -29,7 +30,7 @@ module GaussianParser
       index = 0
 
       was_stationary_point = false
-      was_distance_matrix = false
+      was_standard_orientation = false
       was_mo_coefficients = false
 
       while index < @file_lines.length
@@ -46,21 +47,21 @@ module GaussianParser
           processors[:results_processor] = Processors::ResultsProcessor.new(results)
         end
 
-        if line =~ /Distance matrix/ && was_stationary_point
-          unless was_distance_matrix
-            print_as_usual("Distance matrix processing")
-            was_distance_matrix = true
-            index += 2
-            while @file_lines[index] =~ /^\s*\d+\s*[a-zA-Z]+/
-              temp_arr = @file_lines[index].split(/\s+/)
-              temp_arr.delete("")
-              atom_count[temp_arr[0]] = temp_arr[1]
+        if line =~ /Standard orientation:/ && was_stationary_point
+          unless was_standard_orientation
+            print_as_usual("Standard orientation processing")
+            was_standard_orientation = true
+            index += 5
+            atom_data = []
+            while @file_lines[index] =~ /^(\s+\d+){3}/
+              atom_data.push(@file_lines[index])
               index += 1
             end
+            processors[:atom_processor] = Processors::AtomProcessor.new(atom_data)
           end
         end
         
-        if line =~ /Molecular Orbital Coefficients/ && was_distance_matrix
+        if line =~ /Molecular Orbital Coefficients/ && was_standard_orientation
           unless was_mo_coefficients
             print_as_usual("Molecular orbital processing")
             was_mo_coefficients = true
@@ -217,10 +218,15 @@ module GaussianParser
 
         index += 1
       end 
-      return [processors[:results_processor].process, atom_count, molecular_orbitals, harmonic_frequencies]
+      return [
+        processors[:results_processor].process,
+        processors[:atom_processor].process,
+        molecular_orbitals,
+        harmonic_frequencies
+      ]
     end
 
-    def hartri_to_ev hartri
+    def hartri_to_ev(hartri)
       to_ev = 27.2107
       (hartri.to_f * to_ev).round 6
     end
