@@ -1,6 +1,7 @@
 require "gaussian_parser/cli"
 require "gaussian_parser/processors/results_processor"
 require "gaussian_parser/processors/atom_processor"
+require 'byebug'
 
 module GaussianParser
   class DataProcessor
@@ -69,18 +70,21 @@ module GaussianParser
             current_line = @file_lines[mo_position].split(/\s+/) 
             current_line.delete ""
             last_number = current_line.first.to_i - 1
-            mo_regexp = /^\s+#{last_number+=1}\s+#{last_number+=1}/
+            mo_regexp = generate_mo_regexp(last_number)
             while mo_position < @file_lines.length
               prev_zayniatist = nil
-              if @file_lines[mo_position] =~ mo_regexp
+              if @file_lines[mo_position] =~ mo_regexp &&
+                @file_lines[mo_position + 2] =~ /Eigenvalues --/                
+
                 current_line = @file_lines[mo_position].split(/\s+/)
                 last_number = current_line.last.to_i
-                mo_regexp = /^\s+#{last_number+=1}\s+#{last_number+=1}/
+                mo_regexp = generate_mo_regexp(last_number)
                 current_line.delete ""
                 energy_types = @file_lines[mo_position+=1].split(/\s+/)
                 energy_types.delete ""
                 energy_values = @file_lines[mo_position+=1].scan(/-*\d+\.*\d+/)
                 energy_values.delete ""
+
                 current_line.each_with_index do |elem,i|
                   symetry = energy_types[i].split('--').first.scan(/\w/).join
                   zayniatist = energy_types[i].split('--').last
@@ -229,6 +233,11 @@ module GaussianParser
     def hartri_to_ev(hartri)
       to_ev = 27.2107
       (hartri.to_f * to_ev).round 6
+    end
+
+    def generate_mo_regexp(last_number)
+      str = (1..2).to_a.inject('^') {|memo, e| memo += "\\s+#{last_number + e}"; memo }
+      Regexp.new(str)
     end
   end
 end
