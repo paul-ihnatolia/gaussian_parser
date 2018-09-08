@@ -1,7 +1,6 @@
 require "gaussian_parser/cli"
 require "gaussian_parser/processors/results_processor"
 require "gaussian_parser/processors/atom_processor"
-require 'byebug'
 
 module GaussianParser
   class DataProcessor
